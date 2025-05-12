@@ -1,0 +1,21 @@
+# Python Bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+
+*.pdf
+*.xlsx
+
+# Environment
+.venv/
+.env
+
+
+# VSCode
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# MacOS
+.DS_Store

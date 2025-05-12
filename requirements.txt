@@ -1,0 +1,20 @@
+# PDF-Verarbeitung
+PyMuPDF
+
+# Excel-Export
+pandas
+openpyxl
+
+# GPT & LangChain
+langchain
+langchain-openai
+openai
+
+# Strukturierte Datendefinition
+pydantic
+
+# Fortschrittsbalken (optional, aber hilfreich)
+tqdm
+
+# Umgebungsvariablen (für API-Key)
+python-dotenv
