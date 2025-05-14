@@ -19,43 +19,49 @@ load_dotenv()
 llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.0)
 parser = PydanticOutputParser(pydantic_object=Rating)
 
-# Prepare rating scale and criteria
-scale_text = "\n".join(f"{k}: {v}" for k, v in Rating.scale().items())
-criteria_text = "\n".join(
-    f"- {field.description}"
-    for name, field in Rating.model_fields.items()
-    if name != "explanation"
-)
+def build_prompt() -> str:
+    # Build a block for each dimension showing its 0–4 descriptions
+    scale_blocks = []
+    for dimension, mapping in Rating.scale_descriptions().items():
+        lines = [f"{dimension}:"]
+        lines += [f"  {score}: {desc}" for score, desc in mapping.items()]
+        scale_blocks.append("\n".join(lines))
+    scale_text = "\n\n".join(scale_blocks)
 
-# Prompt template
-prompt = PromptTemplate(
-    template=f"""
+    # List the field descriptions (excluding explanation)
+    criteria_text = "\n".join(
+        f"- {field.description}"
+        for name, field in Rating.model_fields.items()
+        if name != "explanation"
+    )
+
+    return f"""
 You are a scientific analyst.
 
 Evaluate the text according to the following criteria:
 {criteria_text}
 
-Use the following scale for all criteria:
+For each criterion, use the following 0–4 scale:
 {scale_text}
 
-Return the result exclusively in the following JSON format:
+Return the result **exclusively** in the following JSON format:
 {{format_instructions}}
 
 Text:
 {{input_text}}
-""",
+"""
+
+# Create prompt template and chain
+prompt = PromptTemplate(
+    template=build_prompt(),
     input_variables=["input_text"],
     partial_variables={"format_instructions": parser.get_format_instructions()}
 )
-
-# Build the processing chain
 chain = prompt | llm | parser
-
 
 def extract_text_from_pdf(pdf_path: Path) -> str:
     with fitz.open(pdf_path) as doc:
         return "\n".join(page.get_text() for page in doc)
-
 
 def run_rating_pipeline(input_dir: Path) -> List[Dict]:
     results: List[Dict] = []

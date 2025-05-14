@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional, List, ClassVar, Dict
 
 # === JBI Entry purely descriptive ===
 class JBIEntry(BaseModel):
@@ -25,15 +25,30 @@ class Rating(BaseModel):
     transparency: int = Field(ge=0, le=4, description="How transparent and comprehensible is the methodological approach?")
     explanation: Optional[str] = Field(description="Free text: Why was this rating given?")
 
+    _scale_descriptions: ClassVar[Dict[str, Dict[int, str]]] = {
+        "relevance": {
+            0: "kein Bezug zum Thema",
+            1: "geringer Bezug",
+            2: "teilweise relevant",
+            3: "relevant",
+            4: "vollständig relevant"
+        },
+        "transparency": {
+            0: "nicht nachvollziehbar",
+            1: "ungenau",
+            2: "teilweise nachvollziehbar",
+            3: "größtenteils klar",
+            4: "vollständig klar"
+        },
+    }
+
     @classmethod
-    def scale(cls) -> dict[int, str]:
-        return {
-            0: "not fulfilled / inadequate",
-            1: "slightly fulfilled",
-            2: "partially fulfilled",
-            3: "mostly fulfilled",
-            4: "fully fulfilled"
-        }
+    def scale_descriptions(cls) -> Dict[str, Dict[int, str]]:
+        """
+        Wird von der Pipeline genutzt, um im Prompt zu sagen:
+        für jedes Attribut A die Bedeutung von 0–4.
+        """
+        return cls._scale_descriptions
 
 # === KeyFacts schema with user-defined context ===
 class KeyFacts(BaseModel):
