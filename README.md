@@ -1,21 +1,31 @@
-# 🧠 JBI QARI Analysepipeline
+# 🧠 JBI QARI Analysis Pipeline
 
-Automatisierte Analyse wissenschaftlicher PDFs nach dem JBI QARI Framework mit Hilfe von OpenAI & LangChain.
+Automated analysis of scientific PDFs using the JBI QARI framework, powered by OpenAI and LangChain.
 
 ## ⚙️ Features
-- PDF-Verarbeitung mit PyMuPDF
-- LLM-Auswertung via OpenAI API (LangChain)
-- Strukturierte Ausgabe in Excel
-- Fortschrittsanzeige mit tqdm
+   ✅ PDF processing via PyMuPDF
 
-## 🚀 Nutzung
-1. OpenAI API-Key in `.env` setzen:
+   🤖 LLM-based evaluation via OpenAI API (LangChain)
+
+   📊 Structured multi-sheet Excel output
+
+   🔄 Real-time progress display with tqdm
+
+   🧩 Modular support for:
+
+      JBI QARI extraction
+      Rating scoring
+      Key Facts extraction
+
+## 🚀 Usage
+1. Set your OpenAI API key in a .env file:
    ```
    OPENAI_API_KEY=sk-...
    ```
-2. PDFs in `input/` ablegen
 
-3. Schema.py öffnen und eventuelle Anpassungen durchführen!
+2. Place your PDF files inside the input/ folder (Create the required folders [/input and /output in the root directory]).
+
+3. Customize schema.py if needed (e.g., modify data fields or descriptions):
 ```
 class JBIEntry(BaseModel):
     ID: Optional[int] = Field(None, description="Laufende Nummer für interne Zuordnung")
@@ -35,17 +45,19 @@ class JBIEntry(BaseModel):
     Reviewers_comments: Optional[str] = Field(None, description="Reviewer’s conclusions regarding the findings of the article")
 ```
 
-4. Pipeline starten:
+4. Run the pipeline:
    ```
    python main.py
    ```
 
 ## 📁 Output
-Die Datei `output/jbi_results.xlsx` enthält strukturierte Ergebnisse (u.a. Autor, Methode, Setting, etc.).
+Results will be saved to:
+```
+output/analyse_ergebnisse.xlsx
+```
 
-## 🧩 Abhängigkeiten
-Installierbar mit:
+## 🧩 Dependencies
+Install required packages with:
 ```
 pip install -r requirements.txt
 ```
-Benötigte Pakete: `langchain`, `openai`, `pydantic`, `python-dotenv`, `fitz` (PyMuPDF), `tqdm`, `pandas`, `openpyxl`
